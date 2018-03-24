@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Title Here!</title>
+		<meta name="description" content="The text here describes what the webpage
+		is about. It's what will show up in search results for search engines like
+		google under the title of the webpage. It's important that this is relevant
+		to your page and well written!">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"><!--  Twitter Bootstrap -->
+		{% load static %}
+		 <link rel="stylesheet" href="{% static 'login_app/style.css' %}" media="screen" title="no title"  charset="utf-8"> <!-- my style.css -->
+		
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-11">
+					<h1>Welcome, {{ name }}</h1>
+				</div>
+				<div class="col-1">
+					<p><a href="/logout">Logout</a></p>
+				</div>
+			</div>
+			{% if messages %}
+			<div class="row">
+				<ul class="messages">
+						{% for message in messages %}
+							<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+						{% endfor %}
+				</ul>
+			</div>			
+			{% endif %}
+			<div class="row">
+				<div class="col-6">
+					<p>List of all Quotes</p>
+					{% for quote in quotelist reversed%}
+					<div class="row box">
+						<div class="col-12">
+							<div class="row">
+								<p class="red">{{quote.author}} </p>
+							</div>
+							<div class="row"><p>Quote: {{ quote.message }}</p></div>
+							<div class=" row">
+								<p>Posted by: <a href="/users/{{quote.user.id}}">{{quote.user.name}}</a></p>
+							</div>
+							<div class="row">
+								<form action="/addFavorite" method="POST">
+								{% csrf_token %}
+								<input type="hidden" name="quoteID" value="{{quote.id}}">
+								<input type="submit" name="submit" value="Add Favorite">
+							</form>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				<div class="col-6">
+					<div class="row">
+						<div class="col-12">
+							<div class="row">
+								<p>List of Favorites</p>
+							</div>						
+							{%for favorit in favoriteslist reversed%}
+							<div class="row box">
+								<div class="col-12">
+									<p>{{favorit.quote.author}}</p>
+									<p>{{favorit.quote.message}}</p>
+									<p>Posted by: <a href="/users/{{favorit.quote.user.id}}">{{favorit.quote.user.name}}</a></p>
+									<form action="/removeFavorit" method="POST">
+										{% csrf_token %}
+										<input type="hidden" name="favoritID" value="{{favorit.id}}">
+										<input type="submit" name="submit" value="Remove Favorit">
+									</form>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12">
+							<div class="row">
+								<p>Create A Quote</p>
+							</div>
+							<div class="row">
+								<form action="/newquote" method="POST">
+									{% csrf_token %}
+									<p>Quote By: <input type="text" name="author"></p>
+									<p>Message: <input type="text" name="message"></p>
+									<input type="submit" name="submit" value="Submit">
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		
+	</body>
+	</html>
